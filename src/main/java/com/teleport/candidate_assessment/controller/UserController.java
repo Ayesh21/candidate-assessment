@@ -32,9 +32,4 @@ public class UserController {
     public UserResponseDTO getUserById(@PathVariable String userId) {
         return userService.getUserById(userId);
     }
-
-    @GetMapping("/{id}/assignments")
-    public Page<?> assignments(@PathVariable String userId, Pageable pageable) {
-        return taskService.getUserTasks(userId, pageable);
-    }
 }

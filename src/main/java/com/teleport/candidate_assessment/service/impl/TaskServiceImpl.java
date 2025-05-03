@@ -10,6 +10,7 @@ import com.teleport.candidate_assessment.repository.TaskRepository;
 import com.teleport.candidate_assessment.repository.UserRepository;
 import com.teleport.candidate_assessment.service.TaskService;
 import com.teleport.candidate_assessment.transformer.TaskTransformer;
+import com.teleport.candidate_assessment.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,8 +26,8 @@ public class TaskServiceImpl implements TaskService {
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
     @Override
-    public TaskResponseDTO createTask(String projectId, TaskRequestDTO taskRequestDTO) {
-        Project project = projectRepository.findById(projectId).orElseThrow();
+    public TaskResponseDTO createTask(TaskRequestDTO taskRequestDTO) {
+        Project project = projectRepository.findById(taskRequestDTO.projectId()).orElseThrow();
         User assignee = userRepository.findById(taskRequestDTO.assigneeId()).orElseThrow();
         Task task = TaskTransformer.toEntity(taskRequestDTO,assignee,project);
         return TaskTransformer.toResponse(taskRepository.save(task));
@@ -39,11 +40,14 @@ public class TaskServiceImpl implements TaskService {
                 .map(TaskResponseDTO::fromEntity);
     }
 
+    // ----(Async status update + version check)
     @Override
-    public void updateStatus(String id, String status) {
-        Task task = taskRepository.findById(id).orElseThrow();
-        if ("COMPLETED".equals(task.getStatus())) throw new IllegalStateException("Already completed");
-        task.setStatus(status);
+    public void updateStatus(String taskId, String status) {
+        Task task = taskRepository.findById(taskId).orElseThrow();
+        if (task.getStatus().equals(Constants.Status.COMPLETED)) {
+            throw new IllegalStateException("Already completed");
+        }
+        task.setStatus(status.toUpperCase());
         taskRepository.save(task);
 
     }

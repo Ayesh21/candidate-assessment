@@ -5,16 +5,17 @@ import com.teleport.candidate_assessment.dto.TaskResponseDTO;
 import com.teleport.candidate_assessment.entity.Project;
 import com.teleport.candidate_assessment.entity.Task;
 import com.teleport.candidate_assessment.entity.User;
+import com.teleport.candidate_assessment.utils.Constants;
 
 public class TaskTransformer {
     public static Task toEntity(TaskRequestDTO dto, User assignee, Project project) {
         Task task = new Task();
         task.setTitle(dto.title());
-        task.setPriority(dto.priority());
+        task.setPriority(dto.priority().toUpperCase());
         task.setDueDate(dto.dueDate());
         task.setAssignee(assignee);
         task.setProject(project);
-        task.setStatus("NEW"); // default status
+        task.setStatus(Constants.Status.NEW.toString());
         return task;
     }
 

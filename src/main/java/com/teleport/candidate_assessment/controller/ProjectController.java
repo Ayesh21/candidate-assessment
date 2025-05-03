@@ -34,15 +34,4 @@ public class ProjectController {
     public ProjectResponseDTO getProjectById(@PathVariable String projectId) {
         return projectService.getProjectById(projectId);
     }
-
-    @PostMapping("/{projectId}/tasks")
-    public TaskResponseDTO createTask(@PathVariable String projectId, @RequestBody TaskRequestDTO taskRequestDTO) {
-        return taskService.createTask(projectId,taskRequestDTO);
-    }
-
-    @GetMapping("/{projectId}/tasks")
-    public Page<TaskResponseDTO> getFilteredTasks(@PathVariable String projectId, @RequestParam String status, @RequestParam String priority, Pageable pageable) {
-        return taskService.getFilteredTasks(projectId, status, priority, pageable);
-    }
-
 }
