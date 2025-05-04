@@ -12,7 +12,9 @@ import com.teleport.candidate_assessment.transformer.ProjectTransformer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+/** The type Project service. */
 @Service
 @RequiredArgsConstructor
 public class ProjectServiceImpl implements ProjectService {
@@ -20,10 +22,12 @@ public class ProjectServiceImpl implements ProjectService {
   private final UserRepository userRepository;
 
   /**
+   * Create project response dto.
    *
-   * @param projectRequestDTO
-   * @return
+   * @param projectRequestDTO the project request dto
+   * @return the project response dto
    */
+  @Transactional
   @Override
   public ProjectResponseDTO create(ProjectRequestDTO projectRequestDTO) {
     User owner = userRepository.findById(projectRequestDTO.ownerId()).orElseThrow();
@@ -31,6 +35,12 @@ public class ProjectServiceImpl implements ProjectService {
     return ProjectTransformer.toResponse(projectRepository.save(project));
   }
 
+  /**
+   * Gets project by id.
+   *
+   * @param projectId the project id
+   * @return the project by id
+   */
   @Override
   @Cacheable(value = "projectData", key = "#projectId")
   public ProjectResponseDTO getProjectById(String projectId) {
@@ -39,5 +49,4 @@ public class ProjectServiceImpl implements ProjectService {
             .findById(projectId)
             .orElseThrow(() -> new ProjectNotFoundException(projectId)));
   }
-
 }

@@ -10,6 +10,7 @@ import lombok.Setter;
 
 import java.util.UUID;
 
+/** The type User Entity */
 @Entity
 @Getter
 @Setter

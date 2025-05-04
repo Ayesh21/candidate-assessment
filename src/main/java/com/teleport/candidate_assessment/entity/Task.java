@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/** The type Task Entity */
 @Entity
 @Getter
 @Setter
@@ -30,5 +31,5 @@ public class Task {
 
   private LocalDateTime dueDate;
 
-  private String status = "OPEN";
+  private String status;
 }

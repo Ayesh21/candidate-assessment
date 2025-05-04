@@ -7,41 +7,48 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
+/** The type Tracing interceptor. */
 @Component
 public class TracingInterceptor implements HandlerInterceptor {
-    private final Tracer tracer;
+  private final Tracer tracer;
 
-    public TracingInterceptor(Tracer tracer) {
-        this.tracer = tracer;
+  /**
+   * Instantiates a new Tracing interceptor.
+   *
+   * @param tracer the tracer
+   */
+  public TracingInterceptor(Tracer tracer) {
+    this.tracer = tracer;
+  }
+
+  @Override
+  public boolean preHandle(
+      HttpServletRequest request, HttpServletResponse response, Object handler) {
+    String spanName = request.getMethod() + " " + request.getRequestURI();
+    Span span = this.tracer.nextSpan().name(spanName).start();
+
+    // Store the span and scope
+    request.setAttribute("customSpan", span);
+    request.setAttribute("customScope", this.tracer.withSpan(span));
+
+    return true;
+  }
+
+  @Override
+  public void afterCompletion(
+      HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
+    Span span = (Span) request.getAttribute("customSpan");
+    Tracer.SpanInScope scope = (Tracer.SpanInScope) request.getAttribute("customScope");
+
+    if (scope != null) {
+      scope.close();
     }
 
-    @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        String spanName = request.getMethod() + " " + request.getRequestURI();
-        Span span = this.tracer.nextSpan().name(spanName).start();
-
-        // Store the span and scope
-        request.setAttribute("customSpan", span);
-        request.setAttribute("customScope", this.tracer.withSpan(span));
-
-        return true;
+    if (span != null) {
+      if (ex != null) {
+        span.error(ex);
+      }
+      span.end();
     }
-
-    @Override
-    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
-        Span span = (Span) request.getAttribute("customSpan");
-        Tracer.SpanInScope scope = (Tracer.SpanInScope) request.getAttribute("customScope");
-
-        if (scope != null) {
-            scope.close();
-        }
-
-        if (span != null) {
-            if (ex != null) {
-                span.error(ex);
-            }
-            span.end();
-        }
-    }
+  }
 }
-

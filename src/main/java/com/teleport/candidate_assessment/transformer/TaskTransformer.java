@@ -25,7 +25,7 @@ public class TaskTransformer {
     task.setDueDate(dto.dueDate());
     task.setAssignee(assignee);
     task.setProject(project);
-    task.setStatus(Constants.Status.NEW.toString());
+    task.setStatus(Constants.Status.NEW.name());
     return task;
   }
 

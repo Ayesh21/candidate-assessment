@@ -11,6 +11,7 @@ import lombok.Setter;
 
 import java.util.UUID;
 
+/** The type Project Entity */
 @Entity
 @Getter
 @Setter

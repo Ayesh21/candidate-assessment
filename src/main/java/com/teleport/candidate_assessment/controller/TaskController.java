@@ -1,6 +1,5 @@
 package com.teleport.candidate_assessment.controller;
 
-import com.teleport.candidate_assessment.dto.ProjectResponseDTO;
 import com.teleport.candidate_assessment.dto.TaskRequestDTO;
 import com.teleport.candidate_assessment.dto.TaskResponseDTO;
 import com.teleport.candidate_assessment.service.TaskService;
@@ -12,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -21,55 +19,108 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Map;
-
+/** The type Task controller. */
 @RestController
 @RequestMapping("api/tasks")
 @RequiredArgsConstructor
 @Tag(name = "Task Controller", description = "Task Endpoints")
 public class TaskController {
-    private final TaskService taskService;
-    private static final Logger logger = LoggerFactory.getLogger(TaskController.class);
+  private final TaskService taskService;
+  private static final Logger logger = LoggerFactory.getLogger(TaskController.class);
 
-    @Operation(summary = "Create a task", description = "Creates a new task under a given project")
-    @PostMapping("/{projectId}/tasks")
-    public TaskResponseDTO createTask(@RequestBody TaskRequestDTO taskRequestDTO) {
-        logger.info("Creating Task: {}", taskRequestDTO);
-        return taskService.createTask(taskRequestDTO);
-    }
+  /**
+   * Create task task.
+   *
+   * @param taskRequestDTO the task request dto
+   * @return the task response dto
+   */
+  @Operation(summary = "Create a task", description = "Creates a new task under a given project")
+  @PostMapping("/{projectId}/tasks")
+  public TaskResponseDTO createTask(@RequestBody TaskRequestDTO taskRequestDTO) {
+    logger.info("Creating Task: {}", taskRequestDTO);
+    return taskService.createTask(taskRequestDTO);
+  }
 
-    @Operation(summary = "Get by ID", description = "Fetches tasks details by task Id")
-    @GetMapping("/{taskId}")
-    public TaskResponseDTO getTaskById(@PathVariable String taskId) {
-        logger.info("Fetching Task by Task ID: {}", taskId);
-        return taskService.getTaskById(taskId);
-    }
+  /**
+   * Gets task by id.
+   *
+   * @param taskId the task id
+   * @return the task by id
+   */
+  @Operation(summary = "Get by ID", description = "Fetches tasks details by task Id")
+  @GetMapping("/{taskId}")
+  public TaskResponseDTO getTaskById(@PathVariable String taskId) {
+    logger.info("Fetching Task by Task ID: {}", taskId);
+    return taskService.getTaskById(taskId);
+  }
 
-    @Operation(summary = "Get filtered tasks", description = "Returns tasks by project with optional filtering by status and priority")
-    @GetMapping("/{projectId}/tasks")
-    public Page<TaskResponseDTO> getFilteredTasks(@PathVariable String projectId, @RequestParam String status, @RequestParam String priority, Pageable pageable) {
-        logger.info("Fetching filtered tasks - Project ID: {}, Status: {}, Priority: {}", projectId, status, priority);
-        return taskService.getFilteredTasks(projectId, status, priority, pageable);
-    }
+  /**
+   * Gets filtered tasks.
+   *
+   * @param projectId the project id
+   * @param status the status
+   * @param priority the priority
+   * @param pageable the pageable
+   * @return the filtered tasks
+   */
+  @Operation(
+      summary = "Get filtered tasks",
+      description = "Returns tasks by project with optional filtering by status and priority")
+  @GetMapping("/{projectId}/tasks")
+  public Page<TaskResponseDTO> getFilteredTasks(
+      @PathVariable String projectId,
+      @RequestParam String status,
+      @RequestParam String priority,
+      Pageable pageable) {
+    logger.info(
+        "Fetching filtered tasks - Project ID: {}, Status: {}, Priority: {}",
+        projectId,
+        status,
+        priority);
+    return taskService.getFilteredTasks(projectId, status, priority, pageable);
+  }
 
-    @Operation(summary = "View user assignments", description = "Returns all tasks assigned to the user")
-    @GetMapping("/{userId}/assignments")
-    public Page<?> assignments(@PathVariable String userId, Pageable pageable) {
-        logger.info("Fetching all tasks assigned to the user: {}", userId);
-        return taskService.getUserTasks(userId, pageable);
-    }
+  /**
+   * Assignments page.
+   *
+   * @param userId the user id
+   * @param pageable the pageable
+   * @return the page
+   */
+  @Operation(
+      summary = "View user assignments",
+      description = "Returns all tasks assigned to the user")
+  @GetMapping("/{userId}/assignments")
+  public Page<TaskResponseDTO> assignments(@PathVariable String userId, Pageable pageable) {
+    logger.info("Fetching all tasks assigned to the user: {}", userId);
+    return taskService.getUserTasks(userId, pageable);
+  }
 
-    @Operation(summary = "Update task status", description = "Updates the status of a task if it's not completed")
-    @PutMapping("/{taskId}/status")
-    public void updateStatus(@PathVariable String taskId, @RequestParam String status) {
-        logger.info("Updates the status of a task if it's not completed by Task ID: {}", taskId);
-        taskService.updateStatus(taskId, status);
-    }
+  /**
+   * Update status.
+   *
+   * @param taskId the task id
+   * @param status the status
+   */
+  @Operation(
+      summary = "Update task status",
+      description = "Updates the status of a task if it's not completed")
+  @PutMapping("/{taskId}/status")
+  public TaskResponseDTO updateStatus(@PathVariable String taskId, @RequestParam String status) {
+    logger.info("Updates the status by Task ID: {}", taskId);
+    return taskService.updateStatus(taskId, status);
+  }
 
-    @Operation(summary = "Get overdue tasks", description = "Fetches all tasks that are past due")
-    @GetMapping("/overdue")
-    public Page<TaskResponseDTO> overdue(Pageable pageable) {
-        logger.info("Fetches all tasks that are past due");
-        return taskService.getOverdue(pageable);
-    }
+  /**
+   * Overdue page.
+   *
+   * @param pageable the pageable
+   * @return the page
+   */
+  @Operation(summary = "Get overdue tasks", description = "Fetches all tasks that are past due")
+  @GetMapping("/overdue")
+  public Page<TaskResponseDTO> overdue(Pageable pageable) {
+    logger.info("Fetches all tasks that are past due");
+    return taskService.getOverdue(pageable);
+  }
 }

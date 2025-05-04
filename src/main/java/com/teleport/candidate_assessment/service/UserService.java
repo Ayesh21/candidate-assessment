@@ -3,9 +3,7 @@ package com.teleport.candidate_assessment.service;
 import com.teleport.candidate_assessment.dto.UserRequestDTO;
 import com.teleport.candidate_assessment.dto.UserResponseDTO;
 
-/**
- * The interface User service.
- */
+/** The interface User service. */
 public interface UserService {
   /**
    * Create user response dto.

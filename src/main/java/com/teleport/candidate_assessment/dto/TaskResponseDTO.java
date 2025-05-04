@@ -18,6 +18,7 @@ public record TaskResponseDTO(
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
         @JsonSerialize(using = LocalDateTimeSerializer.class)
         LocalDateTime dueDate) {
+
   public static TaskResponseDTO fromEntity(Task task) {
 
     return new TaskResponseDTO(

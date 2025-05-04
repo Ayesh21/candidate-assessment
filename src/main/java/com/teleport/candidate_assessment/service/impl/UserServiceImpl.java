@@ -10,6 +10,7 @@ import com.teleport.candidate_assessment.transformer.UserTransformer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +23,7 @@ public class UserServiceImpl implements UserService {
    * @param userRequestDTO the user request dto
    * @return the user response dto
    */
+  @Transactional
   @Override
   public UserResponseDTO create(UserRequestDTO userRequestDTO) {
     User user = UserTransformer.toEntity(userRequestDTO);
@@ -37,12 +39,7 @@ public class UserServiceImpl implements UserService {
   @Override
   @Cacheable(value = "userData", key = "#userId")
   public UserResponseDTO getUserById(String userId) {
-//    try {
-//      Thread.sleep(5000); // Simulates a delay
-//    } catch (InterruptedException e) {
-//      e.printStackTrace();
-//    }
     return UserResponseDTO.fromEntity(
-            userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId)));
+        userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId)));
   }
 }
