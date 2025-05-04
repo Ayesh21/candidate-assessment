@@ -7,4 +7,5 @@ public record ProjectRequestDTO(
         @NotBlank(message = "Project name is required") String name,
 
         @NotNull(message = "Owner ID is required") String ownerId
+
 ) {}
