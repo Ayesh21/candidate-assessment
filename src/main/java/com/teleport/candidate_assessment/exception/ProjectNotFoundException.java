@@ -1,5 +1,7 @@
 package com.teleport.candidate_assessment.exception;
 
+import static com.teleport.candidate_assessment.utils.ErrorConstant.PROJECT_NOT_FOUND;
+
 /** The type Project not found exception. */
 public class ProjectNotFoundException extends TaskException {
   /**
@@ -8,6 +10,6 @@ public class ProjectNotFoundException extends TaskException {
    * @param projectId the project id
    */
   public ProjectNotFoundException(String projectId) {
-    super("Project not found with ID: " + projectId);
+    super(PROJECT_NOT_FOUND + projectId);
   }
 }

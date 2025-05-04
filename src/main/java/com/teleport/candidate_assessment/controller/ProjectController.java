@@ -33,7 +33,8 @@ public class ProjectController {
   @Operation(
       summary = "Create a new project",
       description = "Creates a new project with a name and owner ID")
-  public ProjectResponseDTO create(@RequestBody ProjectRequestDTO projectRequestDTO) {
+  public ProjectResponseDTO create(@RequestBody final ProjectRequestDTO projectRequestDTO)
+      throws InterruptedException {
     logger.info("Creating Project: {}", projectRequestDTO);
     return projectService.create(projectRequestDTO);
   }
@@ -48,7 +49,7 @@ public class ProjectController {
   @Operation(
       summary = "Get project by ID",
       description = "Fetches project details by its unique ID")
-  public ProjectResponseDTO getProjectById(@PathVariable String projectId) {
+  public ProjectResponseDTO getProjectById(@PathVariable final String projectId) {
     logger.info("Fetching Project by project ID: {}", projectId);
     return projectService.getProjectById(projectId);
   }

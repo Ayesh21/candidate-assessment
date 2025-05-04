@@ -11,7 +11,7 @@ public interface ProjectService {
    * @param projectRequestDTO the project request dto
    * @return the project response dto
    */
-  ProjectResponseDTO create(ProjectRequestDTO projectRequestDTO);
+  ProjectResponseDTO create(final ProjectRequestDTO projectRequestDTO) throws InterruptedException;
 
   /**
    * Gets project by id.
@@ -19,5 +19,5 @@ public interface ProjectService {
    * @param projectId the project id
    * @return the project by id
    */
-  ProjectResponseDTO getProjectById(String projectId);
+  ProjectResponseDTO getProjectById(final String projectId);
 }

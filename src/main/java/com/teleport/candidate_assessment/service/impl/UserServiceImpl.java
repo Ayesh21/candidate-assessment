@@ -8,6 +8,8 @@ import com.teleport.candidate_assessment.repository.UserRepository;
 import com.teleport.candidate_assessment.service.UserService;
 import com.teleport.candidate_assessment.transformer.UserTransformer;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,18 +18,21 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
   private final UserRepository userRepository;
+  private final UserTransformer userTransformer;
+
+  private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
   /**
    * Create user response dto.
    *
    * @param userRequestDTO the user request dto
-   * @return the user response dto
    */
   @Transactional
   @Override
-  public UserResponseDTO create(UserRequestDTO userRequestDTO) {
-    User user = UserTransformer.toEntity(userRequestDTO);
-    return UserTransformer.toResponse(userRepository.save(user));
+  public void create(final UserRequestDTO userRequestDTO) {
+    logger.info("asynchronously saving user ", userRequestDTO);
+    final User user = userTransformer.toEntity(userRequestDTO);
+    userRepository.save(user);
   }
 
   /**
@@ -38,7 +43,7 @@ public class UserServiceImpl implements UserService {
    */
   @Override
   @Cacheable(value = "userData", key = "#userId")
-  public UserResponseDTO getUserById(String userId) {
+  public UserResponseDTO getUserById(final String userId) {
     return UserResponseDTO.fromEntity(
         userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId)));
   }

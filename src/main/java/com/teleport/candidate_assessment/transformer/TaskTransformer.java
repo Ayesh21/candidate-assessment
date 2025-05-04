@@ -5,7 +5,7 @@ import com.teleport.candidate_assessment.dto.TaskResponseDTO;
 import com.teleport.candidate_assessment.entity.Project;
 import com.teleport.candidate_assessment.entity.Task;
 import com.teleport.candidate_assessment.entity.User;
-import com.teleport.candidate_assessment.utils.Constants;
+import com.teleport.candidate_assessment.utils.TaskManagerConstant;
 
 /** The type Task transformer. */
 public class TaskTransformer {
@@ -25,7 +25,7 @@ public class TaskTransformer {
     task.setDueDate(dto.dueDate());
     task.setAssignee(assignee);
     task.setProject(project);
-    task.setStatus(Constants.Status.NEW.name());
+    task.setStatus(TaskManagerConstant.Status.NEW.name());
     return task;
   }
 

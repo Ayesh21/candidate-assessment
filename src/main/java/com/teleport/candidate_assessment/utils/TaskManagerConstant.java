@@ -1,7 +1,7 @@
 package com.teleport.candidate_assessment.utils;
 
 /** The type Constants. */
-public class Constants {
+public class TaskManagerConstant {
   /** The enum Status. */
   public enum Status {
     /** New status. */

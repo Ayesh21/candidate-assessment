@@ -12,15 +12,18 @@ import com.teleport.candidate_assessment.repository.TaskRepository;
 import com.teleport.candidate_assessment.repository.UserRepository;
 import com.teleport.candidate_assessment.service.TaskService;
 import com.teleport.candidate_assessment.transformer.TaskTransformer;
-import com.teleport.candidate_assessment.utils.Constants;
-import java.time.LocalDate;
+import com.teleport.candidate_assessment.utils.TaskManagerConstant;
+
+import java.time.LocalDateTime;
 import java.util.Set;
 
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +35,8 @@ public class TaskServiceImpl implements TaskService {
   private final TaskRepository taskRepository;
   private final ProjectRepository projectRepository;
   private final UserRepository userRepository;
+
+  private static final Logger logger = LoggerFactory.getLogger(TaskServiceImpl.class);
 
   /**
    * Create task.
@@ -67,18 +72,18 @@ public class TaskServiceImpl implements TaskService {
    * @param projectId the project id
    * @param status the status
    * @param priority the priority
-   * @param pageable the pageable
+   * @param page the page
+   * @param size the size
    * @return the filtered tasks
    */
   @Override
   public Page<TaskResponseDTO> getFilteredTasks(
-      final String projectId, final String status, final String priority, final Pageable pageable) {
+      final String projectId, final String status, final String priority,  final int page, final int size) {
     return taskRepository
-        .findByProjectIdAndStatusAndPriority(projectId, status, priority, pageable)
+        .findByProjectIdAndStatusAndPriority(projectId, status, priority,  PageRequest.of(page, size))
         .map(TaskResponseDTO::fromEntity);
   }
 
-  // ----(Async status update + version check)
   /**
    * Update status.
    *
@@ -98,9 +103,9 @@ public class TaskServiceImpl implements TaskService {
 
     // Validate the new status
     if (!Set.of(
-            Constants.Status.NEW.name(),
-            Constants.Status.IN_PROGRESS.name(),
-            Constants.Status.COMPLETED.name())
+            TaskManagerConstant.Status.NEW.name(),
+            TaskManagerConstant.Status.IN_PROGRESS.name(),
+            TaskManagerConstant.Status.COMPLETED.name())
         .contains(newStatus)) {
       throw new TaskException("Invalid status: " + newStatus);
     }
@@ -109,12 +114,12 @@ public class TaskServiceImpl implements TaskService {
       throw new TaskException("Task is already in status: " + currentStatus);
     }
 
-    if (task.getStatus().equals(Constants.Status.COMPLETED.name())) {
+    if (task.getStatus().equals(TaskManagerConstant.Status.COMPLETED.name())) {
       throw new TaskException("Already completed");
     }
 
-    if (currentStatus.equals(Constants.Status.NEW.name())
-        && newStatus.equals(Constants.Status.COMPLETED.name())) {
+    if (currentStatus.equals(TaskManagerConstant.Status.NEW.name())
+        && newStatus.equals(TaskManagerConstant.Status.COMPLETED.name())) {
       throw new TaskException("Cannot directly move from NEW to COMPLETED. Use IN_PROGRESS first.");
     }
 
@@ -126,24 +131,26 @@ public class TaskServiceImpl implements TaskService {
    * Gets user tasks.
    *
    * @param userId the user id
-   * @param pageable the pageable
+   * @param page the page
+   * @param size the size
    * @return the user tasks
    */
   @Override
-  public Page<TaskResponseDTO> getUserTasks(String userId, Pageable pageable) {
-    return taskRepository.findByAssigneeId(userId, pageable).map(TaskResponseDTO::fromEntity);
+  public Page<TaskResponseDTO> getUserTasks(final String userId, final int page, final int size) {
+    return taskRepository.findByAssigneeId(userId, PageRequest.of(page, size)).map(TaskResponseDTO::fromEntity);
   }
 
   /**
    * Gets overdue.
    *
-   * @param pageable the pageable
+   * @param page the page
+   * @param size the size
    * @return the overdue
    */
   @Override
-  public Page<TaskResponseDTO> getOverdue(Pageable pageable) {
+  public Page<TaskResponseDTO> getOverdue(final int page, final int size) {
     return taskRepository
-        .findOverdueTasks(LocalDate.now(), pageable)
+        .findOverdueTasks(LocalDateTime.now(), PageRequest.of(page, size))
         .map(TaskResponseDTO::fromEntity);
   }
 }

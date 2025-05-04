@@ -3,10 +3,12 @@ package com.teleport.candidate_assessment.entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Version;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 
 import java.util.UUID;
 
@@ -17,6 +19,9 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
+    @Version
+    private Long version;
+
     @Id
     private String id = UUID.randomUUID().toString();
 
@@ -25,5 +30,4 @@ public class User {
 
     @Column(nullable = false, unique = true)
     private String email;
-
 }

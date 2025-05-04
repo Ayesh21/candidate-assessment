@@ -1,5 +1,8 @@
 package com.teleport.candidate_assessment.controller;
 
+import static com.teleport.candidate_assessment.utils.LogConstant.CREATE_USER;
+import static com.teleport.candidate_assessment.utils.LogConstant.GET_PROJECT_BY_ID;
+
 import com.teleport.candidate_assessment.dto.UserRequestDTO;
 import com.teleport.candidate_assessment.dto.UserResponseDTO;
 import com.teleport.candidate_assessment.service.UserService;
@@ -28,15 +31,15 @@ public class UserController {
    * Create user.
    *
    * @param userRequestDTO the user request dto
-   * @return the user response dto
    */
   @PostMapping
   @Operation(
       summary = "Create a new user",
       description = "Registers a new user with username and email")
-  public UserResponseDTO create(@Valid @RequestBody UserRequestDTO userRequestDTO) {
-    logger.info("Creating User: {}", userRequestDTO);
-    return userService.create(userRequestDTO);
+  public String create(@Valid @RequestBody final UserRequestDTO userRequestDTO) {
+    logger.info(CREATE_USER, userRequestDTO);
+    userService.create(userRequestDTO);
+    return "OK";
   }
 
   /**
@@ -47,8 +50,8 @@ public class UserController {
    */
   @GetMapping("/{userId}")
   @Operation(summary = "Get user by ID", description = "Fetches user details by their unique ID")
-  public UserResponseDTO getUserById(@PathVariable String userId) {
-    logger.info("Fetching User by user ID: {}", userId);
+  public UserResponseDTO getUserById(@PathVariable final String userId) {
+    logger.info(GET_PROJECT_BY_ID, userId);
     return userService.getUserById(userId);
   }
 }

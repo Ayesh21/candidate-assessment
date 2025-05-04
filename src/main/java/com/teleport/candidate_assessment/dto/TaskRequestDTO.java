@@ -1,5 +1,9 @@
 package com.teleport.candidate_assessment.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
@@ -11,4 +15,7 @@ public record TaskRequestDTO(
     @NotNull(message = "Priority is required") String priority,
     @NotNull(message = "Assignee ID is required") String assigneeId,
     @NotNull(message = "Project ID is required") String projectId,
-    @NotNull(message = "Due date is required") LocalDateTime dueDate) {}
+    @NotNull(message = "Due date is required")
+        @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+        @JsonSerialize(using = LocalDateTimeSerializer.class)
+        LocalDateTime dueDate) {}
