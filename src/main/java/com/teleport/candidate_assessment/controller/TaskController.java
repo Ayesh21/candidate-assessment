@@ -34,7 +34,7 @@ public class TaskController {
    * @return the task response dto
    */
   @Operation(summary = "Create a task", description = "Creates a new task under a given project")
-  @PostMapping("/tasks")
+  @PostMapping
   public TaskResponseDTO createTask(@RequestBody final TaskRequestDTO taskRequestDTO) {
     logger.info("Creating Task: {}", taskRequestDTO);
     return taskService.createTask(taskRequestDTO);

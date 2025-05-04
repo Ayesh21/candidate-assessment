@@ -80,7 +80,7 @@ class TaskControllerTest {
 
     mockMvc
         .perform(
-            post("/api/tasks/proj123/tasks")
+            post("/api/tasks")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(requestDTO)))
         .andExpect(status().isOk())
