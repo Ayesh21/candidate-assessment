@@ -19,6 +19,8 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.teleport.candidate_assessment.utils.ErrorConstant.COULD_NOT_ACQUIRE_LOCK_FOR_OWNER;
+
 /** The type Project service. */
 @Service
 @RequiredArgsConstructor
@@ -40,7 +42,7 @@ public class ProjectServiceImpl implements ProjectService {
   public ProjectResponseDTO create(final ProjectRequestDTO projectRequestDTO)
       throws InterruptedException {
     final String ownerId = projectRequestDTO.ownerId();
-    RLock lock = redissonClient.getLock("owner-lock:" + ownerId);
+    final RLock lock = redissonClient.getLock("owner-lock:" + ownerId);
     if (lock.tryLock(10, 30, TimeUnit.SECONDS)) {
       try {
         lock.lock();
@@ -51,7 +53,7 @@ public class ProjectServiceImpl implements ProjectService {
         lock.unlock();
       }
     } else {
-      throw new IllegalStateException("Could not acquire lock for ownerId: " + ownerId);
+      throw new IllegalStateException(COULD_NOT_ACQUIRE_LOCK_FOR_OWNER + ownerId);
     }
   }
 

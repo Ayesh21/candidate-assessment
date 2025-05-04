@@ -9,7 +9,7 @@ public class ProjectNotFoundException extends TaskException {
    *
    * @param projectId the project id
    */
-  public ProjectNotFoundException(String projectId) {
+  public ProjectNotFoundException(final String projectId) {
     super(PROJECT_NOT_FOUND + projectId);
   }
 }

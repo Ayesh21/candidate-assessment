@@ -19,7 +19,7 @@ public interface TaskRepository extends JpaRepository<Task, String> {
    * @return the page
    */
   Page<Task> findByProjectIdAndStatusAndPriority(
-      String projectId, String status, String priority, Pageable pageable);
+      final String projectId, final String status, final String priority, final Pageable pageable);
 
   /**
    * Find by assignee id page.
@@ -28,7 +28,7 @@ public interface TaskRepository extends JpaRepository<Task, String> {
    * @param pageable the pageable
    * @return the page
    */
-  Page<Task> findByAssigneeId(String userId, Pageable pageable);
+  Page<Task> findByAssigneeId(final String userId, final Pageable pageable);
 
   /**
    * Find overdue tasks page.
@@ -38,5 +38,5 @@ public interface TaskRepository extends JpaRepository<Task, String> {
    * @return the page
    */
   @Query("SELECT t FROM Task t WHERE t.dueDate < :today AND t.status != 'COMPLETED'")
-  Page<Task> findOverdueTasks(LocalDateTime today, Pageable pageable);
+  Page<Task> findOverdueTasks(final LocalDateTime today, final Pageable pageable);
 }

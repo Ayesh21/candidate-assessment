@@ -49,10 +49,12 @@ class UserControllerTest {
   void shouldCreateUserSuccessfully() throws Exception {
     UserRequestDTO requestDTO = new UserRequestDTO("testuser", "test@example.com");
 
-    mockMvc.perform(post("/api/users") // adjust path if needed
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(requestDTO)))
-            .andExpect(status().isOk());
+    mockMvc
+        .perform(
+            post("/api/users") // adjust path if needed
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(requestDTO)))
+        .andExpect(status().isOk());
 
     verify(userService, times(1)).create(requestDTO);
   }

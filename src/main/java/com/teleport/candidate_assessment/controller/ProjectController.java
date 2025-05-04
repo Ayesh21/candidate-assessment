@@ -1,5 +1,14 @@
 package com.teleport.candidate_assessment.controller;
 
+import static com.teleport.candidate_assessment.utils.LogConstant.CREATE_PROJECT;
+import static com.teleport.candidate_assessment.utils.LogConstant.GET_PROJECT_BY_ID;
+import static com.teleport.candidate_assessment.utils.TaskManagerConstant.PROJECT_CONTROLLER_CREATE_ENDPOINT_DESCRIPTION;
+import static com.teleport.candidate_assessment.utils.TaskManagerConstant.PROJECT_CONTROLLER_CREATE_ENDPOINT_SUMMARY;
+import static com.teleport.candidate_assessment.utils.TaskManagerConstant.PROJECT_CONTROLLER_GET_ENDPOINT_DESCRIPTION;
+import static com.teleport.candidate_assessment.utils.TaskManagerConstant.PROJECT_CONTROLLER_GET_ENDPOINT_SUMMARY;
+import static com.teleport.candidate_assessment.utils.UriConstant.PROJECT_CONTROLLER_GET_ENDPOINT;
+import static com.teleport.candidate_assessment.utils.UriConstant.PROJECT_CONTROLLER_URL;
+
 import com.teleport.candidate_assessment.dto.ProjectRequestDTO;
 import com.teleport.candidate_assessment.dto.ProjectResponseDTO;
 import com.teleport.candidate_assessment.service.ProjectService;
@@ -16,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 /** The type Project controller. */
 @RestController
-@RequestMapping("api/projects")
+@RequestMapping(PROJECT_CONTROLLER_URL)
 @RequiredArgsConstructor
 public class ProjectController {
 
@@ -31,11 +40,11 @@ public class ProjectController {
    */
   @PostMapping
   @Operation(
-      summary = "Create a new project",
-      description = "Creates a new project with a name and owner ID")
+      summary = PROJECT_CONTROLLER_CREATE_ENDPOINT_SUMMARY,
+      description = PROJECT_CONTROLLER_CREATE_ENDPOINT_DESCRIPTION)
   public ProjectResponseDTO create(@RequestBody final ProjectRequestDTO projectRequestDTO)
       throws InterruptedException {
-    logger.info("Creating Project: {}", projectRequestDTO);
+    logger.info(CREATE_PROJECT, projectRequestDTO);
     return projectService.create(projectRequestDTO);
   }
 
@@ -45,12 +54,12 @@ public class ProjectController {
    * @param projectId the project id
    * @return the project by id
    */
-  @GetMapping("/{projectId}")
+  @GetMapping(PROJECT_CONTROLLER_GET_ENDPOINT)
   @Operation(
-      summary = "Get project by ID",
-      description = "Fetches project details by its unique ID")
+      summary = PROJECT_CONTROLLER_GET_ENDPOINT_SUMMARY,
+      description = PROJECT_CONTROLLER_GET_ENDPOINT_DESCRIPTION)
   public ProjectResponseDTO getProjectById(@PathVariable final String projectId) {
-    logger.info("Fetching Project by project ID: {}", projectId);
+    logger.info(GET_PROJECT_BY_ID, projectId);
     return projectService.getProjectById(projectId);
   }
 }

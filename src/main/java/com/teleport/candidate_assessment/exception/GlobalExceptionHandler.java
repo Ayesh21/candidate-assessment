@@ -17,7 +17,8 @@ public class GlobalExceptionHandler {
    * @return the error response
    */
   @ExceptionHandler(TaskException.class)
-  public ErrorResponse handleAppException(TaskException ex, HttpServletRequest request) {
+  public ErrorResponse handleAppException(
+      final TaskException ex, final HttpServletRequest request) {
     return ErrorResponse.of("Application Error", ex.getMessage(), request.getRequestURI());
   }
 
@@ -30,8 +31,8 @@ public class GlobalExceptionHandler {
    */
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public ErrorResponse handleValidationException(
-      MethodArgumentNotValidException ex, HttpServletRequest request) {
-    StringBuilder message = new StringBuilder("Validation failed: ");
+      final MethodArgumentNotValidException ex, final HttpServletRequest request) {
+    final StringBuilder message = new StringBuilder("Validation failed: ");
     ex.getBindingResult()
         .getFieldErrors()
         .forEach(
@@ -49,7 +50,8 @@ public class GlobalExceptionHandler {
    * @return the error response
    */
   @ExceptionHandler(IllegalStateException.class)
-  public ErrorResponse handleIllegalState(IllegalStateException ex, HttpServletRequest request) {
+  public ErrorResponse handleIllegalState(
+      final IllegalStateException ex, final HttpServletRequest request) {
     return ErrorResponse.of("Illegal State", ex.getMessage(), request.getRequestURI());
   }
 
@@ -61,8 +63,9 @@ public class GlobalExceptionHandler {
    * @return the error response
    */
   @ExceptionHandler(Exception.class)
-  public ErrorResponse handleGenericException(Exception ex, HttpServletRequest request) {
-    String path = request != null ? request.getRequestURI() : "N/A";
+  public ErrorResponse handleGenericException(
+      final Exception ex, final HttpServletRequest request) {
+    final String path = request != null ? request.getRequestURI() : "N/A";
     ex.printStackTrace();
     return ErrorResponse.of("Server Error", "Unexpected error occurred", path);
   }

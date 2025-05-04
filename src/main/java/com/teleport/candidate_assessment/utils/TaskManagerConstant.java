@@ -21,4 +21,40 @@ public class TaskManagerConstant {
     /** High priority. */
     HIGH
   }
+
+  public static final String USER_CONTROLLER_CREATE_ENDPOINT_SUMMARY = "Create a new user";
+  public static final String USER_CONTROLLER_CREATE_ENDPOINT_DESCRIPTION =
+      "Registers a new user with username and email";
+  public static final String USER_CONTROLLER_CREATE_ENDPOINT_OUTPUT_OK = "OK";
+  public static final String USER_CONTROLLER_GET_ENDPOINT_SUMMARY = "Get user by ID";
+  public static final String USER_CONTROLLER_GET_ENDPOINT_DESCRIPTION =
+      "Fetches user details by their unique ID";
+
+  public static final String PROJECT_CONTROLLER_CREATE_ENDPOINT_SUMMARY = "Create a new project";
+  public static final String PROJECT_CONTROLLER_CREATE_ENDPOINT_DESCRIPTION =
+      "Creates a new project with a name and owner ID";
+  public static final String PROJECT_CONTROLLER_GET_ENDPOINT_SUMMARY = "Get project by ID";
+  public static final String PROJECT_CONTROLLER_GET_ENDPOINT_DESCRIPTION =
+      "Fetches project details by its unique ID";
+
+  public static final String TASK_CONTROLLER_CREATE_ENDPOINT_SUMMARY = "Create a task";
+  public static final String TASK_CONTROLLER_CREATE_ENDPOINT_DESCRIPTION =
+      "Creates a new task under a given project";
+  public static final String TASK_CONTROLLER_GET_ENDPOINT_SUMMARY = "Get task by ID";
+  public static final String TASK_CONTROLLER_GET_ENDPOINT_DESCRIPTION =
+      "Fetches tasks details by task Id";
+  public static final String FILTERED_TASK_CONTROLLER_GET_ENDPOINT_SUMMARY = "Get filtered tasks";
+  public static final String FILTERED_TASK_CONTROLLER_GET_ENDPOINT_DESCRIPTION =
+      "Returns tasks by project with optional filtering by status and priority";
+  public static final String TASK_CONTROLLER_GET_ASSIGNMENT_ENDPOINT_SUMMARY =
+      "View user assignments";
+  public static final String TASK_CONTROLLER_GET_ASSIGNMENT_ENDPOINT_DESCRIPTION =
+      "Returns all tasks assigned to the user";
+  public static final String TASK_CONTROLLER_UPDATE_STATUS_ENDPOINT_SUMMARY = "Update task status";
+  public static final String TASK_CONTROLLER_UPDATE_STATUS_ENDPOINT_DESCRIPTION =
+      "Updates the status of a task if it's not completed";
+  public static final String TASK_CONTROLLER_GET_OVERDUE_TASKS_ENDPOINT_SUMMARY =
+      "Get overdue tasks";
+  public static final String TASK_CONTROLLER_GET_OVERDUE_TASKS_ENDPOINT_DESCRIPTION =
+      "Updates the status of a task if it's not completed";
 }

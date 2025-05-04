@@ -13,8 +13,8 @@ public class ProjectTransformer {
    * @param owner the owner
    * @return the project
    */
-  public static Project toEntity(String projectName, User owner) {
-    Project project = new Project();
+  public static Project toEntity(final String projectName, final User owner) {
+    final Project project = new Project();
     project.setName(projectName);
     project.setOwner(owner);
     return project;
@@ -26,7 +26,7 @@ public class ProjectTransformer {
    * @param project the project
    * @return the project response dto
    */
-  public static ProjectResponseDTO toResponse(Project project) {
+  public static ProjectResponseDTO toResponse(final Project project) {
     return new ProjectResponseDTO(project.getId(), project.getName(), project.getOwner().getId());
   }
 }

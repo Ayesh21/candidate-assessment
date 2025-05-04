@@ -1,5 +1,7 @@
 package com.teleport.candidate_assessment.service.impl;
 
+import static com.teleport.candidate_assessment.utils.LogConstant.TASKS_STATUS;
+
 import com.teleport.candidate_assessment.dto.TaskRequestDTO;
 import com.teleport.candidate_assessment.dto.TaskResponseDTO;
 import com.teleport.candidate_assessment.entity.Project;
@@ -13,10 +15,8 @@ import com.teleport.candidate_assessment.repository.UserRepository;
 import com.teleport.candidate_assessment.service.TaskService;
 import com.teleport.candidate_assessment.transformer.TaskTransformer;
 import com.teleport.candidate_assessment.utils.TaskManagerConstant;
-
 import java.time.LocalDateTime;
 import java.util.Set;
-
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,9 +47,9 @@ public class TaskServiceImpl implements TaskService {
   @Transactional
   @Override
   public TaskResponseDTO createTask(final TaskRequestDTO taskRequestDTO) {
-    Project project = projectRepository.findById(taskRequestDTO.projectId()).orElseThrow();
-    User assignee = userRepository.findById(taskRequestDTO.assigneeId()).orElseThrow();
-    Task task = TaskTransformer.toEntity(taskRequestDTO, assignee, project);
+    final Project project = projectRepository.findById(taskRequestDTO.projectId()).orElseThrow();
+    final User assignee = userRepository.findById(taskRequestDTO.assigneeId()).orElseThrow();
+    final Task task = TaskTransformer.toEntity(taskRequestDTO, assignee, project);
     return TaskTransformer.toResponse(taskRepository.save(task));
   }
 
@@ -78,9 +78,14 @@ public class TaskServiceImpl implements TaskService {
    */
   @Override
   public Page<TaskResponseDTO> getFilteredTasks(
-      final String projectId, final String status, final String priority,  final int page, final int size) {
+      final String projectId,
+      final String status,
+      final String priority,
+      final int page,
+      final int size) {
     return taskRepository
-        .findByProjectIdAndStatusAndPriority(projectId, status, priority,  PageRequest.of(page, size))
+        .findByProjectIdAndStatusAndPriority(
+            projectId, status, priority, PageRequest.of(page, size))
         .map(TaskResponseDTO::fromEntity);
   }
 
@@ -95,13 +100,12 @@ public class TaskServiceImpl implements TaskService {
   @Override
   @CachePut(value = "taskData", key = "#taskId")
   public TaskResponseDTO updateStatus(final String taskId, final String status) {
-    Task task =
+    final Task task =
         taskRepository.findById(taskId).orElseThrow(() -> new TaskNotFoundException(taskId));
 
-    String currentStatus = task.getStatus();
-    String newStatus = status.toUpperCase();
+    final String currentStatus = task.getStatus();
+    final String newStatus = status.toUpperCase();
 
-    // Validate the new status
     if (!Set.of(
             TaskManagerConstant.Status.NEW.name(),
             TaskManagerConstant.Status.IN_PROGRESS.name(),
@@ -122,8 +126,8 @@ public class TaskServiceImpl implements TaskService {
         && newStatus.equals(TaskManagerConstant.Status.COMPLETED.name())) {
       throw new TaskException("Cannot directly move from NEW to COMPLETED. Use IN_PROGRESS first.");
     }
-
     task.setStatus(status.toUpperCase());
+    logger.info(TASKS_STATUS, status);
     return TaskTransformer.toResponse(taskRepository.save(task));
   }
 
@@ -137,7 +141,9 @@ public class TaskServiceImpl implements TaskService {
    */
   @Override
   public Page<TaskResponseDTO> getUserTasks(final String userId, final int page, final int size) {
-    return taskRepository.findByAssigneeId(userId, PageRequest.of(page, size)).map(TaskResponseDTO::fromEntity);
+    return taskRepository
+        .findByAssigneeId(userId, PageRequest.of(page, size))
+        .map(TaskResponseDTO::fromEntity);
   }
 
   /**

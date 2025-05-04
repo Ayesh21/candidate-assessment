@@ -13,12 +13,12 @@ public class LoggerConfig implements WebMvcConfigurer {
    *
    * @param tracingInterceptor the tracing interceptor
    */
-  public LoggerConfig(TracingInterceptor tracingInterceptor) {
+  public LoggerConfig(final TracingInterceptor tracingInterceptor) {
     this.tracingInterceptor = tracingInterceptor;
   }
 
   @Override
-  public void addInterceptors(InterceptorRegistry registry) {
+  public void addInterceptors(final InterceptorRegistry registry) {
     registry.addInterceptor(tracingInterceptor);
   }
 }
