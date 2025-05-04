@@ -7,7 +7,7 @@ public class TaskException extends RuntimeException {
    *
    * @param message the message
    */
-  public TaskException(String message) {
+  public TaskException(final String message) {
     super(message);
   }
 }

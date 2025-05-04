@@ -1,5 +1,7 @@
 package com.teleport.candidate_assessment.exception;
 
+import static com.teleport.candidate_assessment.utils.ErrorConstant.TASK_NOT_FOUND;
+
 /** The type Task not found exception. */
 public class TaskNotFoundException extends TaskException {
   /**
@@ -7,7 +9,7 @@ public class TaskNotFoundException extends TaskException {
    *
    * @param userId the user id
    */
-  public TaskNotFoundException(String userId) {
-    super("Task not found with ID: " + userId);
+  public TaskNotFoundException(final String userId) {
+    super(TASK_NOT_FOUND + userId);
   }
 }

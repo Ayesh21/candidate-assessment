@@ -1,7 +1,14 @@
 package com.teleport.candidate_assessment.controller;
 
 import static com.teleport.candidate_assessment.utils.LogConstant.CREATE_USER;
-import static com.teleport.candidate_assessment.utils.LogConstant.GET_PROJECT_BY_ID;
+import static com.teleport.candidate_assessment.utils.LogConstant.GET_USER_BY_ID;
+import static com.teleport.candidate_assessment.utils.TaskManagerConstant.USER_CONTROLLER_CREATE_ENDPOINT_DESCRIPTION;
+import static com.teleport.candidate_assessment.utils.TaskManagerConstant.USER_CONTROLLER_CREATE_ENDPOINT_OUTPUT_OK;
+import static com.teleport.candidate_assessment.utils.TaskManagerConstant.USER_CONTROLLER_CREATE_ENDPOINT_SUMMARY;
+import static com.teleport.candidate_assessment.utils.TaskManagerConstant.USER_CONTROLLER_GET_ENDPOINT_DESCRIPTION;
+import static com.teleport.candidate_assessment.utils.TaskManagerConstant.USER_CONTROLLER_GET_ENDPOINT_SUMMARY;
+import static com.teleport.candidate_assessment.utils.UriConstant.USER_CONTROLLER_GET_ENDPOINT;
+import static com.teleport.candidate_assessment.utils.UriConstant.USER_CONTROLLER_URL;
 
 import com.teleport.candidate_assessment.dto.UserRequestDTO;
 import com.teleport.candidate_assessment.dto.UserResponseDTO;
@@ -20,7 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 /** The type User controller. */
 @RestController
-@RequestMapping("api/users")
+@RequestMapping(USER_CONTROLLER_URL)
 @RequiredArgsConstructor
 public class UserController {
 
@@ -34,12 +41,12 @@ public class UserController {
    */
   @PostMapping
   @Operation(
-      summary = "Create a new user",
-      description = "Registers a new user with username and email")
+      summary = USER_CONTROLLER_CREATE_ENDPOINT_SUMMARY,
+      description = USER_CONTROLLER_CREATE_ENDPOINT_DESCRIPTION)
   public String create(@Valid @RequestBody final UserRequestDTO userRequestDTO) {
     logger.info(CREATE_USER, userRequestDTO);
     userService.create(userRequestDTO);
-    return "OK";
+    return USER_CONTROLLER_CREATE_ENDPOINT_OUTPUT_OK;
   }
 
   /**
@@ -48,10 +55,12 @@ public class UserController {
    * @param userId the user id
    * @return the user by id
    */
-  @GetMapping("/{userId}")
-  @Operation(summary = "Get user by ID", description = "Fetches user details by their unique ID")
+  @GetMapping(USER_CONTROLLER_GET_ENDPOINT)
+  @Operation(
+      summary = USER_CONTROLLER_GET_ENDPOINT_SUMMARY,
+      description = USER_CONTROLLER_GET_ENDPOINT_DESCRIPTION)
   public UserResponseDTO getUserById(@PathVariable final String userId) {
-    logger.info(GET_PROJECT_BY_ID, userId);
+    logger.info(GET_USER_BY_ID, userId);
     return userService.getUserById(userId);
   }
 }

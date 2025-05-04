@@ -25,7 +25,7 @@ public class SecurityConfig {
    * @throws Exception the exception
    */
   @Bean
-  public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+  public SecurityFilterChain securityFilterChain(final HttpSecurity http) throws Exception {
     http.csrf(csrf -> csrf.disable())
         .authorizeHttpRequests(
             auth ->
@@ -47,8 +47,8 @@ public class SecurityConfig {
    * @return the user details service
    */
   @Bean
-  public UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
-    UserDetails user =
+  public UserDetailsService userDetailsService(final PasswordEncoder passwordEncoder) {
+    final UserDetails user =
         User.withUsername("admin")
             .password(passwordEncoder.encode("password"))
             .roles("USER")

@@ -21,7 +21,6 @@ import com.teleport.candidate_assessment.service.impl.ProjectServiceImpl;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,10 +36,8 @@ class ProjectServiceTest {
 
   @Mock private ProjectRepository projectRepository;
   @Mock private UserRepository userRepository;
-  @Mock
-  private RedissonClient redissonClient;
-  @Mock
-  private RLock rLock;
+  @Mock private RedissonClient redissonClient;
+  @Mock private RLock rLock;
   @InjectMocks private ProjectServiceImpl projectService;
   private ProjectRequestDTO projectRequestDTO;
   private Project project;
@@ -49,9 +46,9 @@ class ProjectServiceTest {
   /** Sets up. */
   @BeforeEach
   void setUp() {
-    user = new User(1L,"user123", "John Doe", "john@example.com");
+    user = new User(1L, "user123", "John Doe", "john@example.com");
     projectRequestDTO = new ProjectRequestDTO("Project Alpha", "user123");
-    project = new Project(1L,"project123", "Project Alpha", user);
+    project = new Project(1L, "project123", "Project Alpha", user);
   }
 
   /** Create project successfully test. */

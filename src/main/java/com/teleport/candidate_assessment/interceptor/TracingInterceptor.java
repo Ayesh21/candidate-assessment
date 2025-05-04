@@ -17,15 +17,15 @@ public class TracingInterceptor implements HandlerInterceptor {
    *
    * @param tracer the tracer
    */
-  public TracingInterceptor(Tracer tracer) {
+  public TracingInterceptor(final Tracer tracer) {
     this.tracer = tracer;
   }
 
   @Override
   public boolean preHandle(
-      HttpServletRequest request, HttpServletResponse response, Object handler) {
-    String spanName = request.getMethod() + " " + request.getRequestURI();
-    Span span = this.tracer.nextSpan().name(spanName).start();
+      final HttpServletRequest request, final HttpServletResponse response, final Object handler) {
+    final String spanName = request.getMethod() + " " + request.getRequestURI();
+    final Span span = this.tracer.nextSpan().name(spanName).start();
 
     // Store the span and scope
     request.setAttribute("customSpan", span);
@@ -36,9 +36,12 @@ public class TracingInterceptor implements HandlerInterceptor {
 
   @Override
   public void afterCompletion(
-      HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
-    Span span = (Span) request.getAttribute("customSpan");
-    Tracer.SpanInScope scope = (Tracer.SpanInScope) request.getAttribute("customScope");
+      final HttpServletRequest request,
+      final HttpServletResponse response,
+      final Object handler,
+      final Exception ex) {
+    final Span span = (Span) request.getAttribute("customSpan");
+    final Tracer.SpanInScope scope = (Tracer.SpanInScope) request.getAttribute("customScope");
 
     if (scope != null) {
       scope.close();

@@ -5,12 +5,11 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Version;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.util.UUID;
 
 /** The type Project Entity */
 @Entity
@@ -19,15 +18,13 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Project {
-    @Version
-    private Long version;
+  @Version private Long version;
 
-    @Id
-    private String id = UUID.randomUUID().toString();
+  @Id private String id = UUID.randomUUID().toString();
 
-    @Column(nullable = false)
-    private String name;
+  @Column(nullable = false)
+  private String name;
 
-    @ManyToOne(optional = false)
-    private User owner;
+  @ManyToOne(optional = false)
+  private User owner;
 }

@@ -12,9 +12,8 @@ import com.teleport.candidate_assessment.dto.UserResponseDTO;
 import com.teleport.candidate_assessment.entity.User;
 import com.teleport.candidate_assessment.repository.UserRepository;
 import com.teleport.candidate_assessment.service.impl.UserServiceImpl;
-import java.util.Optional;
-
 import com.teleport.candidate_assessment.transformer.UserTransformer;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,10 +23,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 /** The type User service test. */
 @ExtendWith(MockitoExtension.class)
-public class UserServiceTest {
+class UserServiceTest {
   @Mock private UserRepository userRepository;
-  @Mock
-  private UserTransformer userTransformer;
+  @Mock private UserTransformer userTransformer;
   @InjectMocks private UserServiceImpl userService;
   private UserRequestDTO userRequestDTO;
   private User user;
@@ -36,7 +34,7 @@ public class UserServiceTest {
   @BeforeEach
   void setUp() {
     userRequestDTO = new UserRequestDTO("JohnDoe", "john@example.com");
-    user = new User(1L,"user123", "JohnDoe", "john@example.com");
+    user = new User(1L, "user123", "JohnDoe", "john@example.com");
   }
 
   /** Create user successfully test. */
