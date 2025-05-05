@@ -46,7 +46,8 @@ Concurrency & Async Processing
 
 Data Layer
 * MySQL – Primary relational database for persistent data.
-* Redis – In-memory key-value store used for locking and possibly caching.
+* Redis – In-memory key-value store used for locking and possibly caching.                                        
+* RUN `docker run -d --name redis-local -p 6379:6379 redis` to Up the Local Resdis image
 
 Testing
 * JUnit 5 – For unit and integration testing.
@@ -66,6 +67,10 @@ Security
 
 Build & Dependency Management
 * Maven Build tool and dependency management.
+
+Tracing and loggers
+* Logback file with zipkin
+  RUN `docker run -d -p 9411:9411 openzipkin/zipkin`  to UP the Zipkin Docker image
 
 
 
