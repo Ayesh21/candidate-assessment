@@ -16,7 +16,7 @@ public class ProjectTransformer {
   public static Project toEntity(final String projectName, final User owner) {
     final Project project = new Project();
     project.setName(projectName);
-    project.setOwner(owner);
+    project.setOwnerId(owner.getId());
     return project;
   }
 
@@ -27,6 +27,6 @@ public class ProjectTransformer {
    * @return the project response dto
    */
   public static ProjectResponseDTO toResponse(final Project project) {
-    return new ProjectResponseDTO(project.getId(), project.getName(), project.getOwner().getId());
+    return new ProjectResponseDTO(project.getId(), project.getName(), project.getOwnerId());
   }
 }

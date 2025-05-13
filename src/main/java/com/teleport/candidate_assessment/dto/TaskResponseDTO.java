@@ -26,8 +26,8 @@ public record TaskResponseDTO(
         task.getTitle(),
         task.getStatus(),
         task.getPriority(),
-        task.getAssignee().getId(),
-        task.getProject().getId(),
+        task.getAssigneeId(),
+        task.getProjectId(),
         task.getDueDate());
   }
 }
