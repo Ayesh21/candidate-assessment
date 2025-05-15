@@ -19,7 +19,7 @@ Task Management
 * Pagination and sorting support using Spring's Pageable.                                                                   
                                                                                                                         
 #### Architecture
-* Backend: Java 17 with Spring Boot 3.x
+* Backend: Java 17 with Spring Boot 3.4.5 with Web-flux
 * Persistence: JPA/Hibernate with likely use of a relational DB
 * Concurrency Handling: Redisson for distributed locks to manage race conditions (e.g. concurrent project creation).
 * DTO Pattern: Clean separation of API-facing DTOs and entity models using transformers.
@@ -35,7 +35,7 @@ Programming Language
 
 Backend Framework
 * Spring Boot 3.4.5 – Rapid application development framework.
-* Spring Web – For building RESTful APIs.
+* Web-Flux - For building RESTful APIs.
 * Spring Validation – For validating request bodies (@Valid).
 * Spring Security
 
@@ -46,6 +46,7 @@ Concurrency & Async Processing
 
 Data Layer
 * MySQL – Primary relational database for persistent data.
+* MongoDB - To store unstructured data
 * Redis – In-memory key-value store used for locking and possibly caching.                                        
 * RUN `docker run -d --name redis-local -p 6379:6379 redis` to Up the Local Resdis image
 
