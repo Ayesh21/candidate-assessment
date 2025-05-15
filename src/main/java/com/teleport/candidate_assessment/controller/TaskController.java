@@ -32,7 +32,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -41,6 +40,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 /** The type Task controller. */
 @RestController
@@ -60,7 +61,7 @@ public class TaskController {
       summary = TASK_CONTROLLER_CREATE_ENDPOINT_SUMMARY,
       description = TASK_CONTROLLER_CREATE_ENDPOINT_DESCRIPTION)
   @PostMapping
-  public TaskResponseDTO createTask(@RequestBody final TaskRequestDTO taskRequestDTO) {
+  public Mono<TaskResponseDTO> createTask(@RequestBody TaskRequestDTO taskRequestDTO) {
     logger.info(CREATE_TASK, taskRequestDTO);
     return taskService.createTask(taskRequestDTO);
   }
@@ -75,7 +76,7 @@ public class TaskController {
   @Operation(
       summary = TASK_CONTROLLER_GET_ENDPOINT_SUMMARY,
       description = TASK_CONTROLLER_GET_ENDPOINT_DESCRIPTION)
-  public TaskResponseDTO getTaskById(@PathVariable final String taskId) {
+  public Mono<TaskResponseDTO> getTaskById(@PathVariable String taskId) {
     logger.info(GET_TASK_BY_ID, taskId);
     return taskService.getTaskById(taskId);
   }
@@ -94,7 +95,7 @@ public class TaskController {
       summary = FILTERED_TASK_CONTROLLER_GET_ENDPOINT_SUMMARY,
       description = FILTERED_TASK_CONTROLLER_GET_ENDPOINT_DESCRIPTION)
   @GetMapping(FILTERED_TASK_CONTROLLER_GET_ENDPOINT)
-  public Page<TaskResponseDTO> getFilteredTasks(
+  public Flux<TaskResponseDTO> getFilteredTasks(
       @PathVariable final String projectId,
       @RequestParam final String status,
       @RequestParam final String priority,
@@ -116,7 +117,7 @@ public class TaskController {
       summary = TASK_CONTROLLER_GET_ASSIGNMENT_ENDPOINT_SUMMARY,
       description = TASK_CONTROLLER_GET_ASSIGNMENT_ENDPOINT_DESCRIPTION)
   @GetMapping(TASK_CONTROLLER_GET_ASSIGNMENT_ENDPOINT)
-  public Page<TaskResponseDTO> assignments(
+  public Flux<TaskResponseDTO> assignments(
       @PathVariable final String userId,
       @RequestParam(name = "page", required = false, defaultValue = "0") final int page,
       @RequestParam(name = "size", required = false, defaultValue = "10") final int size) {
@@ -135,7 +136,7 @@ public class TaskController {
       summary = TASK_CONTROLLER_UPDATE_STATUS_ENDPOINT_SUMMARY,
       description = TASK_CONTROLLER_UPDATE_STATUS_ENDPOINT_DESCRIPTION)
   @PutMapping(TASK_CONTROLLER_UPDATE_STATUS_ENDPOINT)
-  public TaskResponseDTO updateStatus(
+  public Mono<TaskResponseDTO> updateStatus(
       @PathVariable final String taskId, @RequestParam final String status) {
     logger.info(UPDATE_STATUS_BY_TASK_ID, taskId);
     return taskService.updateStatus(taskId, status);
@@ -152,7 +153,7 @@ public class TaskController {
       summary = TASK_CONTROLLER_GET_OVERDUE_TASKS_ENDPOINT_SUMMARY,
       description = TASK_CONTROLLER_GET_OVERDUE_TASKS_ENDPOINT_DESCRIPTION)
   @GetMapping(TASK_CONTROLLER_GET_OVERDUE_TASKS_ENDPOINT)
-  public Page<TaskResponseDTO> overdue(
+  public Flux<TaskResponseDTO> overdue(
       @RequestParam(name = "page", required = false, defaultValue = "0") final int page,
       @RequestParam(name = "size", required = false, defaultValue = "10") final int size) {
     logger.info(GET_OVERDUE_TASKS_BY_CURRENT_DATE);

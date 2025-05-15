@@ -23,8 +23,8 @@ public class TaskTransformer {
     task.setTitle(dto.title());
     task.setPriority(dto.priority().toUpperCase());
     task.setDueDate(dto.dueDate());
-    task.setAssignee(assignee);
-    task.setProject(project);
+    task.setAssigneeId(assignee.getId());
+    task.setProjectId(project.getId());
     task.setStatus(TaskManagerConstant.Status.NEW.name());
     return task;
   }
@@ -41,8 +41,8 @@ public class TaskTransformer {
         task.getTitle(),
         task.getStatus(),
         task.getPriority(),
-        task.getAssignee() != null ? task.getAssignee().getId() : null,
-        task.getProject() != null ? task.getProject().getId() : null,
+        task.getAssigneeId(),
+        task.getProjectId(),
         task.getDueDate());
   }
 }

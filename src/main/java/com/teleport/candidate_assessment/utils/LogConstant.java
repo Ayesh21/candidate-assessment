@@ -19,4 +19,8 @@ public class LogConstant {
   public static final String GET_OVERDUE_TASKS_BY_CURRENT_DATE =
       "Fetches all tasks that are past due";
   public static final String TASKS_STATUS= "Task status: {}";
+  public static final String CREATE_REFERENCE = "Creating a Reference: {}";
+  public static final String GET_REFERENCE_BY_USER_ID = "Get Reference by User Id: {}";
+  public static final String GET_REFERENCE_BY_PROJECT_ID = "Get Reference by User Id: {}";
+  public static final String GET_REFERENCE_BY_TASK_ID = "Get Reference by User Id: {}";
 }

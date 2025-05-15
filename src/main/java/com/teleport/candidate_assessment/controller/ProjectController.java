@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Mono;
 
 /** The type Project controller. */
 @RestController
@@ -42,8 +43,7 @@ public class ProjectController {
   @Operation(
       summary = PROJECT_CONTROLLER_CREATE_ENDPOINT_SUMMARY,
       description = PROJECT_CONTROLLER_CREATE_ENDPOINT_DESCRIPTION)
-  public ProjectResponseDTO create(@RequestBody final ProjectRequestDTO projectRequestDTO)
-      throws InterruptedException {
+  public Mono<ProjectResponseDTO> create(@RequestBody ProjectRequestDTO projectRequestDTO) {
     logger.info(CREATE_PROJECT, projectRequestDTO);
     return projectService.create(projectRequestDTO);
   }
@@ -58,7 +58,7 @@ public class ProjectController {
   @Operation(
       summary = PROJECT_CONTROLLER_GET_ENDPOINT_SUMMARY,
       description = PROJECT_CONTROLLER_GET_ENDPOINT_DESCRIPTION)
-  public ProjectResponseDTO getProjectById(@PathVariable final String projectId) {
+  public Mono<ProjectResponseDTO> getProjectById(@PathVariable String projectId) {
     logger.info(GET_PROJECT_BY_ID, projectId);
     return projectService.getProjectById(projectId);
   }

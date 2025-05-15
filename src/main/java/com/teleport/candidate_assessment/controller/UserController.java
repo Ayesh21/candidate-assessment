@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Mono;
 
 /** The type User controller. */
 @RestController
@@ -43,10 +44,9 @@ public class UserController {
   @Operation(
       summary = USER_CONTROLLER_CREATE_ENDPOINT_SUMMARY,
       description = USER_CONTROLLER_CREATE_ENDPOINT_DESCRIPTION)
-  public String create(@Valid @RequestBody final UserRequestDTO userRequestDTO) {
+  public Mono<String> create(@Valid @RequestBody final UserRequestDTO userRequestDTO) {
     logger.info(CREATE_USER, userRequestDTO);
-    userService.create(userRequestDTO);
-    return USER_CONTROLLER_CREATE_ENDPOINT_OUTPUT_OK;
+    return userService.create(userRequestDTO).thenReturn(USER_CONTROLLER_CREATE_ENDPOINT_OUTPUT_OK);
   }
 
   /**
@@ -59,7 +59,7 @@ public class UserController {
   @Operation(
       summary = USER_CONTROLLER_GET_ENDPOINT_SUMMARY,
       description = USER_CONTROLLER_GET_ENDPOINT_DESCRIPTION)
-  public UserResponseDTO getUserById(@PathVariable final String userId) {
+  public Mono<UserResponseDTO> getUserById(@PathVariable final String userId) {
     logger.info(GET_USER_BY_ID, userId);
     return userService.getUserById(userId);
   }

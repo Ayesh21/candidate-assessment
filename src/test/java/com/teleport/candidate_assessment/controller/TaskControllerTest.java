@@ -1,10 +1,9 @@
 package com.teleport.candidate_assessment.controller;
 
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.teleport.candidate_assessment.dto.TaskRequestDTO;
 import com.teleport.candidate_assessment.dto.TaskResponseDTO;
 import com.teleport.candidate_assessment.service.TaskService;
@@ -16,37 +15,32 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.*;
-import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.test.web.reactive.server.WebTestClient;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 /** The type Task controller test. */
 @ExtendWith(MockitoExtension.class)
 class TaskControllerTest {
 
-  @Mock private TaskService taskService;
+  @Mock
+  private TaskService taskService;
 
-  @InjectMocks private TaskController taskController;
+  @InjectMocks
+  private TaskController taskController;
 
-  private MockMvc mockMvc;
-  private final ObjectMapper objectMapper = new ObjectMapper();
-
+  private WebTestClient webTestClient;
   private TaskResponseDTO sampleTask;
   private Pageable pageable;
 
   /** Sets up. */
   @BeforeEach
   void setUp() {
-    PageableHandlerMethodArgumentResolver pageableResolver =
-        new PageableHandlerMethodArgumentResolver();
-    pageableResolver.setMaxPageSize(15);
-
-    mockMvc =
-        MockMvcBuilders.standaloneSetup(taskController)
-            .setCustomArgumentResolvers(pageableResolver)
-            .build();
+    webTestClient = WebTestClient.bindToController(taskController).build();
 
     sampleTask =
         new TaskResponseDTO(
@@ -61,11 +55,7 @@ class TaskControllerTest {
     pageable = PageRequest.of(0, 10, Sort.by("dueDate").descending());
   }
 
-  /**
-   * Should create task.
-   *
-   * @throws Exception the exception
-   */
+  /** Should create task. @throws Exception the exception @throws Exception the exception */
   @Test
   void shouldCreateTask() throws Exception {
     TaskRequestDTO requestDTO =
@@ -76,104 +66,141 @@ class TaskControllerTest {
             "user123",
             "proj123",
             LocalDateTime.now().plusDays(1));
-    when(taskService.createTask(requestDTO)).thenReturn(sampleTask);
+    doReturn(Mono.just(sampleTask)).when(taskService).createTask(requestDTO);
 
-    mockMvc
-        .perform(
-            post("/api/tasks")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(requestDTO)))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.id").value("task123"))
-        .andExpect(jsonPath("$.title").value("Task Testing"));
+    webTestClient
+        .post()
+        .uri("/api/tasks")
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(Mono.just(requestDTO), TaskRequestDTO.class)
+        .exchange()
+        .expectStatus()
+        .isOk()
+        .expectBody()
+        .jsonPath("$.id")
+        .isEqualTo("task123")
+        .jsonPath("$.title")
+        .isEqualTo("Task Testing");
+
+    verify(taskService, times(1)).createTask(requestDTO);
   }
 
-  /**
-   * Should get task by id.
-   *
-   * @throws Exception the exception
-   */
+  /** Should get task by id. @throws Exception the exception */
   @Test
   void shouldGetTaskById() throws Exception {
-    when(taskService.getTaskById("task123")).thenReturn(sampleTask);
+    doReturn(Mono.just(sampleTask)).when(taskService).getTaskById("task123");
 
-    mockMvc
-        .perform(get("/api/tasks/task123"))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.status").value("IN_PROGRESS"));
+    webTestClient
+        .get()
+        .uri("/api/tasks/task123")
+        .exchange()
+        .expectStatus()
+        .isOk()
+        .expectBody()
+        .jsonPath("$.status")
+        .isEqualTo("IN_PROGRESS");
+
+    verify(taskService, times(1)).getTaskById("task123");
   }
 
-  /**
-   * Should get filtered tasks.
-   *
-   * @throws Exception the exception
-   */
+  /** Should get filtered tasks. @throws Exception the exception */
   @Test
   void shouldGetFilteredTasks() throws Exception {
-    Page<TaskResponseDTO> page = new PageImpl<>(List.of(sampleTask), pageable, 1);
+    List<TaskResponseDTO> tasks = List.of(sampleTask);
+    doReturn(Flux.fromIterable(tasks))
+        .when(taskService)
+        .getFilteredTasks("proj123", "IN_PROGRESS", "HIGH", 0, 10);
 
-    when(taskService.getFilteredTasks("proj123", "IN_PROGRESS", "HIGH", 0, 10)).thenReturn(page);
+    webTestClient
+        .get()
+        .uri(
+            uriBuilder ->
+                uriBuilder
+                    .path("/api/tasks/proj123/tasks")
+                    .queryParam("status", "IN_PROGRESS")
+                    .queryParam("priority", "HIGH")
+                    .queryParam("page", "0")
+                    .queryParam("size", "10")
+                    .build())
+        .exchange()
+        .expectStatus()
+        .isOk()
+        .expectBody()
+        .jsonPath("$[0].id")
+        .isEqualTo("task123");
 
-    mockMvc
-        .perform(
-            get("/api/tasks/proj123/tasks")
-                .param("status", "IN_PROGRESS")
-                .param("priority", "HIGH")
-                .param("page", "0")
-                .param("size", "10")
-                .param("sort", "dueDate,desc"))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.content[0].id").value("task123"));
+    verify(taskService, times(1)).getFilteredTasks("proj123", "IN_PROGRESS", "HIGH", 0, 10);
   }
 
-  /**
-   * Should update task status.
-   *
-   * @throws Exception the exception
-   */
+  /** Should update task status. @throws Exception the exception */
   @Test
   void shouldUpdateTaskStatus() throws Exception {
-    when(taskService.updateStatus("task123", "COMPLETED")).thenReturn(sampleTask);
+    doReturn(Mono.just(sampleTask)).when(taskService).updateStatus("task123", "COMPLETED");
 
-    mockMvc
-        .perform(put("/api/tasks/task123/status").param("status", "COMPLETED"))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.status").value("IN_PROGRESS")); // from mock setup
+    webTestClient
+        .put()
+        .uri("/api/tasks/task123/status?status=COMPLETED")
+        .exchange()
+        .expectStatus()
+        .isOk()
+        .expectBody()
+        .jsonPath("$.status")
+        .isEqualTo("IN_PROGRESS"); // Based on mock setup
+
+    verify(taskService, times(1)).updateStatus("task123", "COMPLETED");
   }
 
-  /**
-   * Should get overdue tasks.
-   *
-   * @throws Exception the exception
-   */
+  /** Should get overdue tasks. @throws Exception the exception */
   @Test
   void shouldGetOverdueTasks() throws Exception {
-    Page<TaskResponseDTO> page = new PageImpl<>(List.of(sampleTask), pageable, 1);
+    List<TaskResponseDTO> tasks = List.of(sampleTask);
+    doReturn(Flux.fromIterable(tasks)).when(taskService).getOverdue(0, 10);
 
-    when(taskService.getOverdue(0, 10)).thenReturn(page);
+    webTestClient
+        .get()
+        .uri(
+            uriBuilder ->
+                uriBuilder
+                    .path("/api/tasks/overdue")
+                    .queryParam("page", "0")
+                    .queryParam("size", "10")
+                    .build())
+        .exchange()
+        .expectStatus()
+        .isOk()
+        .expectBody()
+        .jsonPath("$[0].id")
+        .isEqualTo("task123")
+        .jsonPath("$[0].title")
+        .isEqualTo("Task Testing");
 
-    mockMvc
-        .perform(get("/api/tasks/overdue").param("page", "0").param("size", "10"))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.content[0].id").value("task123"))
-        .andExpect(jsonPath("$.content[0].title").value("Task Testing"));
+    verify(taskService, times(1)).getOverdue(0, 10);
   }
 
-  /**
-   * Should get user assignments.
-   *
-   * @throws Exception the exception
-   */
+  /** Should get user assignments. @throws Exception the exception */
   @Test
   void shouldGetUserAssignments() throws Exception {
-    Page<TaskResponseDTO> page = new PageImpl<>(List.of(sampleTask), pageable, 1);
+    List<TaskResponseDTO> tasks = List.of(sampleTask);
+    doReturn(Flux.fromIterable(tasks)).when(taskService).getUserTasks("user123", 0, 10);
 
-    when(taskService.getUserTasks("user123", 0, 10)).thenReturn(page);
+    webTestClient
+        .get()
+        .uri(
+            uriBuilder ->
+                uriBuilder
+                    .path("/api/tasks/user123/assignments")
+                    .queryParam("page", "0")
+                    .queryParam("size", "10")
+                    .build())
+        .exchange()
+        .expectStatus()
+        .isOk()
+        .expectBody()
+        .jsonPath("$[0].id")
+        .isEqualTo("task123")
+        .jsonPath("$[0].title")
+        .isEqualTo("Task Testing");
 
-    mockMvc
-        .perform(get("/api/tasks/user123/assignments").param("page", "0").param("size", "10"))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.content[0].id").value("task123"))
-        .andExpect(jsonPath("$.content[0].title").value("Task Testing"));
+    verify(taskService, times(1)).getUserTasks("user123", 0, 10);
   }
 }
