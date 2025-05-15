@@ -1,30 +1,30 @@
 package com.teleport.candidate_assessment.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Version;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Version;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 
 /** The type Project Entity */
-@Entity
+@Table("project")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Project {
-  @Version private Long version;
+  @Version
+  private Long version;
 
-  @Id private String id = UUID.randomUUID().toString();
+  @Id
+  private String id = UUID.randomUUID().toString();
 
-  @Column(nullable = false)
   private String name;
 
-  @ManyToOne(optional = false)
-  private User owner;
+  @Column("owner_id")
+  private String ownerId;
 }

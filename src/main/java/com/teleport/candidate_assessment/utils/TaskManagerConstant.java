@@ -57,4 +57,20 @@ public class TaskManagerConstant {
       "Get overdue tasks";
   public static final String TASK_CONTROLLER_GET_OVERDUE_TASKS_ENDPOINT_DESCRIPTION =
       "Updates the status of a task if it's not completed";
+  public static final String REFERENCE_CONTROLLER_CREATE_ENDPOINT_SUMMARY =
+          "Create a Reference";
+  public static final String REFERENCE_CONTROLLER_CREATE_DESCRIPTION =
+          "Create new Reference for all the user Id , project Id and task Id";
+  public static final String REFERENCE_CONTROLLER_GET_USER_ID_ENDPOINT_SUMMARY =
+          "Get User Id";
+  public static final String REFERENCE_CONTROLLER_GET_USER_ID_DESCRIPTION =
+          "Get Reference using user Id";
+  public static final String REFERENCE_CONTROLLER_GET_PROJECT_ID_ENDPOINT_SUMMARY =
+          "Get Project Id";
+  public static final String REFERENCE_CONTROLLER_GET_USERID_DESCRIPTION =
+          "Get Reference using project Id";
+  public static final String REFERENCE_CONTROLLER_GET_TASK_ID_ENDPOINT_SUMMARY =
+          "Get Task Id";
+  public static final String REFERENCE_CONTROLLER_GET_TASK_ID_DESCRIPTION =
+          "Get Reference using task Id";
 }

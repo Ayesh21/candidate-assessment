@@ -1,9 +1,10 @@
 package com.teleport.candidate_assessment.service.impl;
 
+import static com.teleport.candidate_assessment.utils.ErrorConstant.COULD_NOT_ACQUIRE_LOCK_FOR_OWNER;
+
 import com.teleport.candidate_assessment.dto.ProjectRequestDTO;
 import com.teleport.candidate_assessment.dto.ProjectResponseDTO;
 import com.teleport.candidate_assessment.entity.Project;
-import com.teleport.candidate_assessment.entity.User;
 import com.teleport.candidate_assessment.exception.ProjectNotFoundException;
 import com.teleport.candidate_assessment.repository.ProjectRepository;
 import com.teleport.candidate_assessment.repository.UserRepository;
@@ -11,15 +12,12 @@ import com.teleport.candidate_assessment.service.ProjectService;
 import com.teleport.candidate_assessment.transformer.ProjectTransformer;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
-import org.redisson.api.RLock;
-import org.redisson.api.RedissonClient;
+import org.redisson.api.RLockReactive;
+import org.redisson.api.RedissonReactiveClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import static com.teleport.candidate_assessment.utils.ErrorConstant.COULD_NOT_ACQUIRE_LOCK_FOR_OWNER;
+import reactor.core.publisher.Mono;
 
 /** The type Project service. */
 @Service
@@ -27,7 +25,8 @@ import static com.teleport.candidate_assessment.utils.ErrorConstant.COULD_NOT_AC
 public class ProjectServiceImpl implements ProjectService {
   private final ProjectRepository projectRepository;
   private final UserRepository userRepository;
-  private final RedissonClient redissonClient;
+  private final RedissonReactiveClient redissonReactiveClient;
+
 
   private static final Logger logger = LoggerFactory.getLogger(ProjectServiceImpl.class);
 
@@ -37,25 +36,28 @@ public class ProjectServiceImpl implements ProjectService {
    * @param projectRequestDTO the project request dto
    * @return the project response dto
    */
-  @Transactional
   @Override
-  public ProjectResponseDTO create(final ProjectRequestDTO projectRequestDTO)
-      throws InterruptedException {
+  public Mono<ProjectResponseDTO> create(ProjectRequestDTO projectRequestDTO) {
     final String ownerId = projectRequestDTO.ownerId();
-    final RLock lock = redissonClient.getLock("owner-lock:" + ownerId);
-    if (lock.tryLock(10, 30, TimeUnit.SECONDS)) {
-      try {
-        lock.lock();
-        final User owner = userRepository.findById(ownerId).orElseThrow();
-        final Project project = ProjectTransformer.toEntity(projectRequestDTO.name(), owner);
-        return ProjectTransformer.toResponse(projectRepository.save(project));
-      } finally {
-        lock.unlock();
-      }
-    } else {
-      throw new IllegalStateException(COULD_NOT_ACQUIRE_LOCK_FOR_OWNER + ownerId);
-    }
+    final RLockReactive lock = redissonReactiveClient.getLock("owner-lock:" + ownerId);
+
+    return lock.tryLock(10, 30, TimeUnit.SECONDS)
+            .flatMap(acquired -> {
+              if (Boolean.TRUE.equals(acquired)) {
+                return userRepository.findById(ownerId)
+                        .switchIfEmpty(Mono.error(new ProjectNotFoundException(ownerId)))
+                        .flatMap(owner -> {
+                          Project project = ProjectTransformer.toEntity(projectRequestDTO.name(), owner);
+                          return projectRepository.save(project)
+                                  .map(ProjectTransformer::toResponse);
+                        })
+                        .doFinally(signalType -> lock.unlock().subscribe());
+              } else {
+                return Mono.error(new IllegalStateException(COULD_NOT_ACQUIRE_LOCK_FOR_OWNER + ownerId));
+              }
+            });
   }
+
 
   /**
    * Gets project by id.
@@ -64,11 +66,9 @@ public class ProjectServiceImpl implements ProjectService {
    * @return the project by id
    */
   @Override
-  @Cacheable(value = "projectData", key = "#projectId")
-  public ProjectResponseDTO getProjectById(final String projectId) {
-    return ProjectResponseDTO.fromEntity(
-        projectRepository
-            .findById(projectId)
-            .orElseThrow(() -> new ProjectNotFoundException(projectId)));
+  public Mono<ProjectResponseDTO> getProjectById(String projectId) {
+      return projectRepository.findById(projectId)
+              .switchIfEmpty(Mono.error(new ProjectNotFoundException(projectId)))
+              .map(ProjectResponseDTO::fromEntity);
   }
 }

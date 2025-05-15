@@ -10,9 +10,10 @@ import com.teleport.candidate_assessment.transformer.UserTransformer;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Mono;
+
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -27,12 +28,12 @@ public class UserServiceImpl implements UserService {
    *
    * @param userRequestDTO the user request dto
    */
-  @Transactional
   @Override
-  public void create(final UserRequestDTO userRequestDTO) {
-    logger.info("asynchronously saving user ", userRequestDTO);
+  public Mono<Void> create(final UserRequestDTO userRequestDTO) {
+    logger.info("Saving user {}", userRequestDTO);
     final User user = userTransformer.toEntity(userRequestDTO);
-    userRepository.save(user);
+    user.setId(UUID.randomUUID().toString());
+    return userRepository.save(user).then();
   }
 
   /**
@@ -42,9 +43,9 @@ public class UserServiceImpl implements UserService {
    * @return the user by id
    */
   @Override
-  @Cacheable(value = "userData", key = "#userId")
-  public UserResponseDTO getUserById(final String userId) {
-    return UserResponseDTO.fromEntity(
-        userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId)));
+  public Mono<UserResponseDTO> getUserById(final String userId) {
+    return userRepository.findById(userId)
+            .switchIfEmpty(Mono.error(new UserNotFoundException(userId)))
+            .map(UserResponseDTO::fromEntity);
   }
 }
